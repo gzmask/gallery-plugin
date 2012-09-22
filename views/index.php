@@ -45,15 +45,6 @@ if (!defined('IN_CMS')) { exit(); }
   function sendData(data, index)
   {
     xmlhttp = new XMLHttpRequest();
-    /*
-    xmlhttp.onreadystatechange = function()
-    {
-      if (xmlhttp.readyState==4 && xmlhttp.status==200)
-      {
-        alert(xmlhttp.responseText);
-      }
-    }
-    */
     xmlhttp.open("GET", "<?php echo get_url('plugin/gallery/update'); ?>?orders="+data+"&index="+index, true);
     xmlhttp.send();
   }
@@ -82,21 +73,23 @@ if (!defined('IN_CMS')) { exit(); }
       }
     });
     $("#draggable").draggable({
-      connectToSortable: "#list",
-      revert: "valid"
+        connectToSortable: "#list",
+        revert: "invalid",
+        cancel: "div.delete_icon"
     });
     $("ul, li").disableSelection();
   });
 </script>
 
-<table><tr><td>
+<table style="width:auto"><tr><td>
 <div class="gallery">
 <ul id="list">
   <li id="draggable" style="padding:0px"></li>
 <?php for($i = 1; $i <= $rows; $i++) {  ?>
 <li id="draggable" class="<?php echo $i; ?>">
-<a href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]'><img src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
-  </li>
+  <a href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]'><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+  <a href ="<?php echo get_url('plugin/gallery/delete/' . $files[$i]->image_path); ?>" onclick="return confirm('<?php echo __('Are you sure you wish to delete?'); ?>');"><img class="delete_icon" src="<?php echo ICONS_URI;?>delete-16.png" alt="<?php echo __('delete file icon'); ?>" title="<?php echo __('Delete file'); ?>" /></a>
+</li>
 <?php }  ?>
   <li id="draggable" style="padding:0px"></li>
 </ul>

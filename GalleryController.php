@@ -48,8 +48,8 @@ class GalleryController extends PluginController {
     }
 
     private function lightbox_display() {
-          require_once('/var/www/melchercms/config.php');
-          
+          require_once(CMS_ROOT . DS . 'config.php');
+
           $filelist = array();
           $db = mysql_connect('localhost', DB_USER, DB_PASS);
           if($db) {
@@ -89,7 +89,7 @@ class GalleryController extends PluginController {
           redirect(get_url('plugin/gallery/index'));
         }
 
-        require_once('/var/www/melchercms/config.php');
+        require_once(CMS_ROOT . DS . 'config.php');
 
         $imageName = $_FILES['image']['name'];
         $thumbnailName = $_FILES['thumbnail']['name']; 
@@ -147,19 +147,14 @@ class GalleryController extends PluginController {
     }
 
     function update() {
-      require_once('/var/www/melchercms/config.php');
+      require_once(CMS_ROOT . DS . 'config.php');
 
       $order = $_GET['orders'];
       $length = $_GET['index'];
       $db = mysql_connect('localhost', DB_USER, DB_PASS);
       if($db) {
         mysql_select_db('gallery', $db);
-        //$select_sql = "select * from image_order where 1";
-        //$result = mysql_query($select_sql) or Flash::setNow('error', __('Cannot select from database'));
-        //$num_rows = mysql_num_rows($result);
-
         $num = explode(',', $order, $length);
-
 
         for($i = 0; $i < $length; $i = $i + 2)
         {
@@ -173,8 +168,45 @@ class GalleryController extends PluginController {
         }
       }
       mysql_close($db);
-      //echo $order;
     }
+
+    function delete() {
+        require_once(CMS_ROOT . DS . 'config.php');
+
+        $order = func_get_args();
+        $image_name = array_pop($order);
+        $file = FILES_DIR . '/gallery/' . $image_name;
+        
+        if(is_file($file)) {
+          $db = mysql_connect('localhost', DB_USER, DB_PASS);
+          if($db) {
+            mysql_select_db('gallery', $db);
+            $select_sql = "select * from image_order where 1";
+            $result = mysql_query($select_sql) or Flash::setNow('error', __('Cannot select from database'));
+            $rows = mysql_num_rows($result);
+            $select_sql = "select * from image_order where image_name = '$image_name'";
+            $result = mysql_query($select_sql) or Flash::setNow('error', __('Cannot select from database'));
+            $thumbnail_name = mysql_result($result, 0, 'thumbnail_name');
+            $order = mysql_result($result, 0, 'order_number');
+
+            if(!unlink($file))
+                Flash::setNow('error', __('Cannot delete image file'));
+            $file = FILES_DIR . '/gallery/thumbnails/' . $thumbnail_name;
+            if(!unlink($file))
+                Flash::setNow('error', __('Cannot delete thumbnail file'));
+            $delete_sql = "delete from image_order where image_name = '$image_name'";
+            mysql_query($delete_sql) or Flash::setNow('error', __('Cannot delete from database'));
+            $order++;
+            for($i = $order; $i <= $rows; $i++) {
+              $num = $i - 1;
+              $update_sql = "update image_order set order_number = '$num' where order_number = '$i'";
+              mysql_query($update_sql) or Flash::setNow('error', __('Cannot update database'));
+            }
+          }
+          mysql_close($db);
+        } 
+        redirect(get_url('plugin/gallery/index/')); 
+    } 
 
     function settings() {
         /** You can do this...
