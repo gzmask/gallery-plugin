@@ -219,7 +219,7 @@ class GalleryController extends PluginController {
                 Flash::setNow('error', __('Cannot delete thumbnail file'));
 	    if($rollover_name != '')
 	    {
-	    	$file = FILES_DIR . 'gallery/rollovers/' . $rollover_name;
+	    	$file = FILES_DIR . '/gallery/rollovers/' . $rollover_name;
             	if(!unlink($file))
 			Flash::setNow('error', __('Cannot delete thunbnail file'));
 	    }
