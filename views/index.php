@@ -87,7 +87,17 @@ if (!defined('IN_CMS')) { exit(); }
   <li id="draggable" style="padding:0px"></li>
 <?php for($i = 1; $i <= $rows; $i++) {  ?>
 <li id="draggable" class="<?php echo $i; ?>">
-  <a href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]'><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+  <a class="<?php echo "image" . $i; ?>" href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]'><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+<script>
+$(".image<?php echo $i; ?>").hover(
+	function() {
+		$(".image<?php echo $i; ?> img").attr("src", "<?php echo $files[$i]->rollover_path; ?>");
+	},
+	function() {
+		$(".image<?php echo $i; ?> img").attr("src", "<?php echo $files[$i]->thumbnail_path; ?>");
+	}
+);
+</script>
   <a href ="<?php echo get_url('plugin/gallery/delete/' . $files[$i]->image_path); ?>" onclick="return confirm('<?php echo __('Are you sure you wish to delete?'); ?>');"><img class="delete_icon" src="<?php echo ICONS_URI;?>delete-16.png" alt="<?php echo __('delete file icon'); ?>" title="<?php echo __('Delete file'); ?>" /></a>
 </li>
 <?php }  ?>
@@ -105,7 +115,7 @@ if (!defined('IN_CMS')) { exit(); }
     <div class="content">
       <form method="post" action="<?php echo get_url('plugin/gallery/upload'); ?>" enctype="multipart/form-data">
       <input type="hidden" name="path" value="<?php echo ($dir == '') ? '/': $dir; ?>"/>
-      <input type="checkbox" name="use_rollover" value=1 />
+      <input type="checkbox" name="use_rollover" value="1" />Use Rollover Image<br />
         Image: <input type="file" name="image" /><br />
         Thumbnail: <input type="file" name="thumbnail" /><br />
 	RollOver: <input type="file" name="rollover" /><br />

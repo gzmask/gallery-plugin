@@ -63,14 +63,17 @@ class GalleryController extends PluginController {
               $result = mysql_query($select_sql) or Flash::setNow('error', __('Cannot select from database'));
               $image = mysql_result($result, 0, 'image_name');
               $thumbnail = mysql_result($result, 0, 'thumbnail_name');
-              $order = mysql_result($result, 0, 'order_number');
+              $rollover = mysql_result($result, 0, 'rollover_name');
+	      $order = mysql_result($result, 0, 'order_number');
               $image_path = URL_PUBLIC . 'public/gallery/' . $image;
               $thumbnail_path = URL_PUBLIC . 'public/gallery/thumbnails/' . $thumbnail;
+	      $rollover_path = URL_PUBLIC . 'public/gallery/rollovers/' . $rollover;
               $object = new stdClass;
               $object->order = $order;
               $object->image_path = $image_path;
               $object->thumbnail_path = $thumbnail_path;
-
+	      $object->rollover_path = $rollover_path;
+	      $object->rollover = $rollover;
               $filelist[$object->order] = $object;
             }
           }
@@ -136,7 +139,7 @@ class GalleryController extends PluginController {
 	    $dest = FILES_DIR . '/gallery/rollovers/';
 	    $file_ext = (strpos($origin, '.') === false ? '' : '.' . substr(strrchr($origin, '.'), 1));
             $file_name = substr($origin, 0, strlen($origin) - strlen($file_ext)) . '_' . $i . $file_ext;
-            $full_dest = $dest . $thumbnailName;
+            $full_dest = $dest . $rolloverName;
             if(!move_uploaded_file($_FILES['rollover']['tmp_name'], $full_dest)) {
               Flash::set('error', __('File has not been uploaded!'));
               redirect(get_url('plugin/gallery/index'));
@@ -153,16 +156,8 @@ class GalleryController extends PluginController {
             $result = mysql_query($select_sql);
             $num_rows = mysql_num_rows($result);
             $num_rows++;
-	    if($use_rollover)
-	    {
-		$insert_sql = "insert into image_order (order_number, image_name, thumbnail_name, rollover_name)" .
-			      "values ('$num_rows', '$imageName', '$thumbnailName', $rolloverName')";
-	    }
-	    else
-	    {
-            	$insert_sql = "insert into image_order (order_number, image_name, thumbnail_name)" .
-                              "values ('$num_rows', '$imageName', '$thumbnailName')";
-	    }
+	    $insert_sql = "insert into image_order (order_number, image_name, thumbnail_name, rollover_name)" .
+			  "values ('$num_rows', '$imageName', '$thumbnailName', '$rolloverName')";
             mysql_query($insert_sql) or Flash::setNow('error', __('Cannot insert to database'));
             redirect(get_url('plugin/gallery/index'));
           }
@@ -214,6 +209,7 @@ class GalleryController extends PluginController {
             $select_sql = "select * from image_order where image_name = '$image_name'";
             $result = mysql_query($select_sql) or Flash::setNow('error', __('Cannot select from database'));
             $thumbnail_name = mysql_result($result, 0, 'thumbnail_name');
+	    $rollover_name = mysql_result($result, 0, 'rollover_name');
             $order = mysql_result($result, 0, 'order_number');
 
             if(!unlink($file))
@@ -221,7 +217,13 @@ class GalleryController extends PluginController {
             $file = FILES_DIR . '/gallery/thumbnails/' . $thumbnail_name;
             if(!unlink($file))
                 Flash::setNow('error', __('Cannot delete thumbnail file'));
-            $delete_sql = "delete from image_order where image_name = '$image_name'";
+	    if($rollover_name != '')
+	    {
+	    	$file = FILES_DIR . 'gallery/rollovers/' . $rollover_name;
+            	if(!unlink($file))
+			Flash::setNow('error', __('Cannot delete thunbnail file'));
+	    }
+	    $delete_sql = "delete from image_order where image_name = '$image_name'";
             mysql_query($delete_sql) or Flash::setNow('error', __('Cannot delete from database'));
             $order++;
             for($i = $order; $i <= $rows; $i++) {
