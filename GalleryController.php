@@ -93,13 +93,18 @@ class GalleryController extends PluginController {
 
         $imageName = $_FILES['image']['name'];
         $thumbnailName = $_FILES['thumbnail']['name']; 
-        $path = $_POST['path'];
-        $path = str_replace('..', '', $path);
+	$rolloverName = $_FILES['rollover']['name'];        
+
+	$path = $_POST['path'];
+        $use_rollover = $_POST['use_rollover'];
+	$path = str_replace('..', '', $path);
 
         $imageName = preg_replace('/ /', '_', $imageName);
         $imageName = preg_replace('/[^a-z0-9_\-\.]/i', '', $imageName);
         $thumbnailName = preg_replace('/ /', '_', $thumbnailName);
         $thumbnailName = preg_replace('/[^a-z0-9_\-\.]/i', '', $thumbnailName);
+	$rolloverName = preg_replace('/ /', '_', $rolloverName);
+        $rolloverName = preg_replace('/[^a-z0-9_\-\.]/i', '', $rolloverName);
 
         if(isset($_FILES)) {
           $origin = $imageName;
@@ -123,6 +128,20 @@ class GalleryController extends PluginController {
             Flash::set('error', __('File has not been uploaded!'));
             redirect(get_url('plugin/gallery/index'));
           }
+	
+	  if($use_rollover)
+	  {
+	    $origin = $rolloverName;
+	    $origin = basename($origin);
+	    $dest = FILES_DIR . '/gallery/rollovers/';
+	    $file_ext = (strpos($origin, '.') === false ? '' : '.' . substr(strrchr($origin, '.'), 1));
+            $file_name = substr($origin, 0, strlen($origin) - strlen($file_ext)) . '_' . $i . $file_ext;
+            $full_dest = $dest . $thumbnailName;
+            if(!move_uploaded_file($_FILES['rollover']['tmp_name'], $full_dest)) {
+              Flash::set('error', __('File has not been uploaded!'));
+              redirect(get_url('plugin/gallery/index'));
+            }
+	  }
         }
         
         $db = mysql_connect('localhost', DB_USER, DB_PASS);
@@ -134,8 +153,16 @@ class GalleryController extends PluginController {
             $result = mysql_query($select_sql);
             $num_rows = mysql_num_rows($result);
             $num_rows++;
-            $insert_sql = "insert into image_order (order_number, image_name, thumbnail_name)" .
-                          "values ('$num_rows', '$imageName', '$thumbnailName')";
+	    if($use_rollover)
+	    {
+		$insert_sql = "insert into image_order (order_number, image_name, thumbnail_name, rollover_name)" .
+			      "values ('$num_rows', '$imageName', '$thumbnailName', $rolloverName')";
+	    }
+	    else
+	    {
+            	$insert_sql = "insert into image_order (order_number, image_name, thumbnail_name)" .
+                              "values ('$num_rows', '$imageName', '$thumbnailName')";
+	    }
             mysql_query($insert_sql) or Flash::setNow('error', __('Cannot insert to database'));
             redirect(get_url('plugin/gallery/index'));
           }

@@ -105,8 +105,10 @@ if (!defined('IN_CMS')) { exit(); }
     <div class="content">
       <form method="post" action="<?php echo get_url('plugin/gallery/upload'); ?>" enctype="multipart/form-data">
       <input type="hidden" name="path" value="<?php echo ($dir == '') ? '/': $dir; ?>"/>
+      <input type="checkbox" name="use_rollover" value=1 />
         Image: <input type="file" name="image" /><br />
         Thumbnail: <input type="file" name="thumbnail" /><br />
+	RollOver: <input type="file" name="rollover" /><br />
         <input type="submit" value="Upload" />
       </form>
     </div>
