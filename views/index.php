@@ -88,6 +88,10 @@ if (!defined('IN_CMS')) { exit(); }
 <?php for($i = 1; $i <= $rows; $i++) {  ?>
 <li id="draggable" class="<?php echo $i; ?>">
   <a class="<?php echo "image" . $i; ?>" href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]'><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+<?php
+if($files[$i]->rollover != '')
+{
+?>
 <script>
 $(".image<?php echo $i; ?>").hover(
 	function() {
@@ -98,6 +102,9 @@ $(".image<?php echo $i; ?>").hover(
 	}
 );
 </script>
+<?php
+}
+?>
   <a href ="<?php echo get_url('plugin/gallery/delete/' . $files[$i]->image_path); ?>" onclick="return confirm('<?php echo __('Are you sure you wish to delete?'); ?>');"><img class="delete_icon" src="<?php echo ICONS_URI;?>delete-16.png" alt="<?php echo __('delete file icon'); ?>" title="<?php echo __('Delete file'); ?>" /></a>
 </li>
 <?php }  ?>
