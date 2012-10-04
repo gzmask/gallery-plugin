@@ -65,15 +65,21 @@ class GalleryController extends PluginController {
               $thumbnail = mysql_result($result, 0, 'thumbnail_name');
               $rollover = mysql_result($result, 0, 'rollover_name');
 	      $order = mysql_result($result, 0, 'order_number');
+	      $title = mysql_result($result, 0, 'title');
+	      $description = mysql_result($result, 0, 'description');
+	      $keyword = mysql_result($result, 0, 'keyword');
               $image_path = URL_PUBLIC . 'public/gallery/' . $image;
               $thumbnail_path = URL_PUBLIC . 'public/gallery/thumbnails/' . $thumbnail;
 	      $rollover_path = URL_PUBLIC . 'public/gallery/rollovers/' . $rollover;
-              $object = new stdClass;
+	      $object = new stdClass;
               $object->order = $order;
               $object->image_path = $image_path;
               $object->thumbnail_path = $thumbnail_path;
 	      $object->rollover_path = $rollover_path;
 	      $object->rollover = $rollover;
+	      $object->title = $title;
+	      $object->description = $description;
+	      $object->keyword = $keyword;
               $filelist[$object->order] = $object;
             }
           }
@@ -236,6 +242,31 @@ class GalleryController extends PluginController {
         } 
         redirect(get_url('plugin/gallery/index/')); 
     } 
+
+    function edit() {
+	require_once(CMS_ROOT . DS . 'config.php');
+	
+	$image_number = $_POST['image_number'];	
+	$description = $_POST['description'];
+	$keyword = $_POST['keyword'];
+	$title = $_POST['title'];
+
+	if($description != '' || $keyword != '' || $title != '')
+	{
+		$db = mysql_connect('localhost', DB_USER, DB_PASS);
+		if($db)
+		{
+			mysql_select_db('gallery', $db);
+			$update_sql = "update image_order set description = '$description', title = '$title', keyword = '$keyword' " .
+				  "where order_number = '$image_number'";
+			mysql_query($update_sql) or Flash::setNow('error', __('Cannot update database')); 	
+		}
+		else
+			Flash::setNow('error', __('Cannot connect to database'));
+		mysql_close($db);
+	}
+	redirect(get_url('plugin/gallery/index/'));
+    }
 
     function settings() {
         /** You can do this...

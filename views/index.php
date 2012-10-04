@@ -87,7 +87,10 @@ if (!defined('IN_CMS')) { exit(); }
   <li id="draggable" style="padding:0px"></li>
 <?php for($i = 1; $i <= $rows; $i++) {  ?>
 <li id="draggable" class="<?php echo $i; ?>">
-  <a class="<?php echo "image" . $i; ?>" href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]'><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+  <a class="<?php echo "image" . $i; ?>" href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]' title="<?php echo $files[$i]->title; ?>"><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+<a href ="<?php echo get_url('plugin/gallery/delete/' . $files[$i]->image_path); ?>" onclick="return confirm('<?php echo __('Are you sure you wish to delete?'); ?>');"><img class="icon" src="<?php echo ICONS_URI;?>delete-16.png" alt="<?php echo __('delete file icon'); ?>" title="<?php echo __('Delete file'); ?>" /></a>
+  <a href="#edit-file-popup" id="<?php echo "edit" . $i; ?>" class="popupLink"><img class="icon" src="<?php echo ICONS_URI; ?>rename-16.png" alt="<?php echo __('edit file icon'); ?>" title="<?php echo __('Edit file'); ?>" /></a>
+
 <?php
 if($files[$i]->rollover != '')
 {
@@ -105,7 +108,28 @@ $(".image<?php echo $i; ?>").hover(
 <?php
 }
 ?>
-  <a href ="<?php echo get_url('plugin/gallery/delete/' . $files[$i]->image_path); ?>" onclick="return confirm('<?php echo __('Are you sure you wish to delete?'); ?>');"><img class="delete_icon" src="<?php echo ICONS_URI;?>delete-16.png" alt="<?php echo __('delete file icon'); ?>" title="<?php echo __('Delete file'); ?>" /></a>
+<script>
+$("#edit<?php echo $i; ?>").click(
+	function() {
+		var index = <?php echo $i; ?>;
+		<?php $n = $i; ?>
+		while(index >= parseInt($(this).parent().attr('class')))
+		{
+			if(index == parseInt($(this).parent().attr('class')))
+			{
+				<?php $image_number = $n; ?>
+			}
+			<?php $n--; ?>
+			index--;
+		}
+		$('input:hidden[name=image_number]').val(<?php echo $image_number; ?>);
+		$('input:text[name=title]').val('<?php echo $files[$image_number]->title; ?>');
+		$('textarea[name=description]').val('<?php echo $files[$image_number]->description; ?>');
+		$('input:text[name=keyword]').val('<?php echo $files[$image_number]->keyword; ?>');
+	}
+);
+
+</script>
 </li>
 <?php }  ?>
   <li id="draggable" style="padding:0px"></li>
@@ -123,8 +147,8 @@ $(".image<?php echo $i; ?>").hover(
       <form method="post" action="<?php echo get_url('plugin/gallery/upload'); ?>" enctype="multipart/form-data">
       <input type="hidden" name="path" value="<?php echo ($dir == '') ? '/': $dir; ?>"/>
       <input type="checkbox" name="use_rollover" value="1" />Use Rollover Image<br />
-        Image: <input type="file" name="image" /><br />
-        Thumbnail: <input type="file" name="thumbnail" /><br />
+        *Image: <input type="file" name="image" /><br />
+        *Thumbnail: <input type="file" name="thumbnail" /><br />
 	RollOver: <input type="file" name="rollover" /><br />
         <input type="submit" value="Upload" />
       </form>
@@ -132,3 +156,20 @@ $(".image<?php echo $i; ?>").hover(
   </div>
 </div>
 
+<div id="boxes">
+	<div id="edit-file-popup" class="window">
+		<div class="titlebar">
+			<?php echo __('Edit file'); ?>
+			<a href="#" class="close"><img src="<?php echo ICONS_URI; ?>delete-disabled-16.png" /></a>
+		</div>
+		<div class="content">
+			<form method="post" action="<?php echo get_url('plugin/gallery/edit'); ?>">
+				<input type="hidden" name="image_number" value="somevalue"/>
+				Title:<br /><input type="text" name="title" maxlength="50"size="50"/><br />
+				Description:<br /><textarea rows="5" name="description" maxlength="150" ></textarea><br />
+				Keyword:<br /><input type="text" name="keyword" size="50"/><br /><br />
+				<input type="submit" value="Save" />
+			</form>
+		</div>
+	</div>
+</div>
