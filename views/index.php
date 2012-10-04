@@ -126,6 +126,7 @@ $("#edit<?php echo $i; ?>").click(
 		$('input:text[name=title]').val('<?php echo $files[$image_number]->title; ?>');
 		$('textarea[name=description]').val('<?php echo $files[$image_number]->description; ?>');
 		$('input:text[name=keyword]').val('<?php echo $files[$image_number]->keyword; ?>');
+		$('input:text[name=url]').val('<?php echo $files[$image_number]->image_path; ?>');
 	}
 );
 
@@ -167,7 +168,8 @@ $("#edit<?php echo $i; ?>").click(
 				<input type="hidden" name="image_number" value="somevalue"/>
 				Title:<br /><input type="text" name="title" maxlength="50"size="50"/><br />
 				Description:<br /><textarea rows="5" name="description" maxlength="150" ></textarea><br />
-				Keyword:<br /><input type="text" name="keyword" size="50"/><br /><br />
+				Keyword:<br /><input type="text" name="keyword" size="50"/><br />
+				URL:<br /><input type="text" name="url" size="50" /><br /><br />
 				<input type="submit" value="Save" />
 			</form>
 		</div>
