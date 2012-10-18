@@ -41,7 +41,7 @@ Plugin::setInfos(array(
 	//'author'      => 'Martijn van der Kleijn',
     //'website'     => 'http://www.wolfcms.org/',
     //'update_url'  => 'http://www.wolfcms.org/plugin-versions.xml',
-    //'require_wolf_version' => '0.5.5'
+    'require_wolf_version' => '0.5.5'
 ));
 
-Plugin::addController('gallery', __('Gallery'));
+Plugin::addController('gallery', __('Gallery'), 'admin_view', true);

@@ -87,7 +87,7 @@ if (!defined('IN_CMS')) { exit(); }
   <li id="draggable" style="padding:0px"></li>
 <?php for($i = 1; $i <= $rows; $i++) {  ?>
 <li id="draggable" class="<?php echo $i; ?>">
-  <a class="<?php echo "image" . $i; ?>" href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]' title="<?php echo $files[$i]->title; ?>"><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
+  <a class="<?php echo "image" . $i; ?>" href="<?php echo $files[$i]->image_path; ?>" rel='lightbox[image]' alt="<?php echo $files[$i]->keyword; ?>" title="<?php echo $files[$i]->title; ?>"><img class="image" src="<?php echo $files[$i]->thumbnail_path; ?>" /></a>
 <a href ="<?php echo get_url('plugin/gallery/delete/' . $files[$i]->image_path); ?>" onclick="return confirm('<?php echo __('Are you sure you wish to delete?'); ?>');"><img class="icon" src="<?php echo ICONS_URI;?>delete-16.png" alt="<?php echo __('delete file icon'); ?>" title="<?php echo __('Delete file'); ?>" /></a>
   <a href="#edit-file-popup" id="<?php echo "edit" . $i; ?>" class="popupLink"><img class="icon" src="<?php echo ICONS_URI; ?>rename-16.png" alt="<?php echo __('edit file icon'); ?>" title="<?php echo __('Edit file'); ?>" /></a>
 
