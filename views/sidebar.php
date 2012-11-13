@@ -33,5 +33,5 @@ if (!defined('IN_CMS')) { exit(); }
  */
 ?>
 
-<p class="button"><a href="#upload-file-popup" class="popupLink"><img src="<?php echo ICONS_URI; ?>upload-32.png" align="middle" alt="upload icon"     /><?php echo __('Upload file'); ?></a></p>
-
+<p class="button"><a href="#upload-file-popup" class="popupLink"><img src="<?php echo ICONS_URI; ?>upload-32.png" align="middle" alt="upload icon"     /><?php echo __('Upload Image'); ?></a></p>
+<p class="button"><a href="#create-gallery" class="popupLink"><img src="<?php echo ICONS_URI; ?>upload-32.png" align="middle" alt="upload icon" /><?php echo __('Create Gallery')?></a></p>
